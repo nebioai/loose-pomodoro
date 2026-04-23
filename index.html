@@ -143,6 +143,14 @@
     text-align: center; font-size: 10px; color: var(--ink-mute);
     letter-spacing: 0.12em; opacity: 0.75;
   }
+  .end-btn {
+    width: 100%; margin-top: 12px; padding: 14px;
+    background: transparent; color: var(--ink-dim);
+    border: 1px solid var(--hair); border-radius: 14px;
+    font-size: 13px; letter-spacing: 0.12em;
+    font-family: var(--font-display); font-style: italic;
+  }
+  .end-btn:active { background: var(--surface-alt); color: var(--ink); }
 
   .gentle {
     margin-top: 16px; padding: 14px 18px; background: var(--surface-alt);
@@ -838,20 +846,12 @@ function saveEditLap(sessionId, lapIndex, newStartHHMM, newEndHHMM) {
   render();
 }
 
-// ---------- Long press ----------
-let longPressTimer = null;
-function onPointerDown(e) {
-  if (!state.session) return;
-  clearTimeout(longPressTimer);
-  longPressTimer = setTimeout(() => {
-    state.confirmEnd = true;
-    render();
-  }, 700);
-}
-function cancelLongPress() { clearTimeout(longPressTimer); }
+// ---------- Button handlers ----------
 function onTapButton() {
-  cancelLongPress();
   if (state.session) toggle();
+}
+function onTapEnd() {
+  if (state.session) { state.confirmEnd = true; render(); }
 }
 
 // ---------- Canvas export ----------
@@ -1006,8 +1006,9 @@ function renderNow() {
         <div class="time">${fmtLap(lapMs)}</div>
         <div class="sub">この${mode === 'work' ? '作業' : '休憩'}の経過時間</div>
       </div>
-      <div class="ghost-hint">タップで切替 · 長押しで終了</div>
+      <div class="ghost-hint">タップで切替</div>
     </button>
+    <button class="end-btn" id="endBtn">セッションを終了</button>
     ${gentle ? `<div class="gentle"><span style="margin-right:8px;">✦</span>${escapeHtml(gentle)}</div>` : ''}
     <div class="today">
       <div class="label">today</div>
@@ -1035,10 +1036,9 @@ function renderNow() {
   `;
 
   const btn = document.getElementById('mainBtn');
-  btn.addEventListener('pointerdown', onPointerDown);
-  btn.addEventListener('pointerup', onTapButton);
-  btn.addEventListener('pointerleave', cancelLongPress);
-  btn.addEventListener('pointercancel', cancelLongPress);
+  btn.addEventListener('click', onTapButton);
+  const endBtn = document.getElementById('endBtn');
+  if (endBtn) endBtn.addEventListener('click', onTapEnd);
 }
 
 function renderHistory() {
