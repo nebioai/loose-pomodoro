@@ -1,6 +1,6 @@
 // Loose Pomodoro - Service Worker
 // キャッシュのバージョン（更新時はこの数字を上げる）
-const CACHE_VERSION = 'loose-pomodoro-v1';
+const CACHE_VERSION = 'loose-pomodoro-v2';
 
 // キャッシュするファイル
 const CACHE_FILES = [
