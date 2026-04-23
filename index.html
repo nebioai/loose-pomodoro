@@ -58,99 +58,63 @@
     margin: 0 auto;
     left: 0; right: 0;
   }
-  header { padding: 28px 24px 8px; }
+  header { padding: 22px 24px 4px; }
   .brand {
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 18px;
     letter-spacing: 0.01em;
-    color: var(--ink);
-  }
-  .tag {
-    font-size: 11px;
-    color: var(--ink-mute);
-    margin-top: 2px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    font-weight: 500;
+    color: var(--ink-dim);
   }
 
   .view { padding: 16px 20px 20px; display: flex; flex-direction: column; flex: 1; }
 
   /* Start screen */
-  .start-hero { margin-top: 40px; text-align: center; margin-bottom: 32px; }
-  .start-hero h1 {
-    font-family: var(--font-display); font-style: italic;
-    font-size: 34px; font-weight: 400;
-    color: var(--ink); line-height: 1.3; margin: 0 0 8px;
-  }
-  .start-hero p { font-size: 13px; color: var(--ink-dim); letter-spacing: 0.08em; margin: 0; }
   .start-btn {
     width: 100%; background: var(--work); color: var(--bg);
-    border: none; border-radius: 24px; padding: 44px 24px;
-    display: flex; flex-direction: column; align-items: center;
-    box-shadow: 0 2px 0 #1c2a3d;
+    border: none; border-radius: 28px; padding: 72px 24px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 0 #1c2a3d; margin-top: 32px;
+    transition: transform 0.1s;
   }
-  .start-btn .k {
-    font-size: 11px; letter-spacing: 0.28em; opacity: 0.7; text-transform: uppercase;
-  }
+  .start-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #1c2a3d; }
   .start-btn .j {
-    font-family: var(--font-display); font-size: 34px; font-weight: 400; margin-top: 6px;
-  }
-  .hint-box {
-    margin-top: 24px; padding: 16px 18px; background: var(--surface);
-    border-radius: 14px; border: 1px solid var(--hair);
-    font-size: 12px; color: var(--ink-dim); line-height: 1.7;
-  }
-  .hint-box .label {
-    font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
-    color: var(--ink-mute); font-weight: 600; margin-bottom: 6px;
+    font-family: var(--font-display); font-style: italic;
+    font-size: 38px; font-weight: 400; letter-spacing: 0.01em;
   }
 
   /* Main button */
   .main-btn {
     width: 100%; aspect-ratio: 4 / 3; max-height: 46vh;
-    border-radius: 24px; padding: 18px 22px 14px;
-    display: flex; flex-direction: column; justify-content: space-between;
+    border-radius: 28px; padding: 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 18px;
     touch-action: manipulation; user-select: none;
     margin-top: 8px;
     box-shadow: 0 1px 0 var(--hair);
+    transition: transform 0.1s;
   }
+  .main-btn:active { transform: scale(0.995); }
   .main-btn.work { background: var(--work-soft); color: var(--work); border: 1px solid #2D405722; }
   .main-btn.rest { background: var(--rest-soft); color: var(--rest); border: 1px solid #5F735522; }
-  .main-btn .top { text-align: left; width: 100%; }
-  .main-btn .k {
-    font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
-    opacity: 0.6; font-weight: 600;
+  .main-btn .label {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 22px; font-weight: 400;
   }
-  .main-btn .j {
-    font-family: var(--font-display); font-style: italic; font-size: 26px;
-    font-weight: 400; margin-top: 2px;
-  }
-  .main-btn .time-wrap { text-align: center; }
   .main-btn .time {
     font-family: var(--font-display);
-    font-size: clamp(56px, 18vw, 88px);
+    font-size: clamp(64px, 20vw, 96px);
     font-weight: 300; letter-spacing: -0.02em;
     line-height: 1; font-feature-settings: "tnum";
   }
-  .main-btn .sub {
-    font-size: 10px; color: var(--ink-dim); margin-top: 6px;
-    letter-spacing: 0.2em; text-transform: uppercase;
-  }
-  .main-btn .ghost-hint {
-    text-align: center; font-size: 10px; color: var(--ink-mute);
-    letter-spacing: 0.12em; opacity: 0.75;
-  }
   .end-btn {
-    width: 100%; margin-top: 12px; padding: 14px;
-    background: transparent; color: var(--ink-dim);
+    width: 100%; margin-top: 14px; padding: 14px;
+    background: transparent; color: var(--ink-mute);
     border: 1px solid var(--hair); border-radius: 14px;
-    font-size: 13px; letter-spacing: 0.12em;
-    font-family: var(--font-display); font-style: italic;
+    font-size: 13px; letter-spacing: 0.08em;
   }
-  .end-btn:active { background: var(--surface-alt); color: var(--ink); }
+  .end-btn:active { background: var(--surface-alt); color: var(--ink-dim); }
 
   .gentle {
     margin-top: 16px; padding: 14px 18px; background: var(--surface-alt);
@@ -349,10 +313,11 @@
   }
   .session .del-btn {
     margin-left: auto; background: transparent;
-    border: none; color: var(--danger);
+    border: none; color: var(--ink-mute);
     font-size: 12px; padding: 4px 8px;
     letter-spacing: 0.05em;
   }
+  .session .del-btn:active { color: var(--danger); }
   .session .srow2 {
     display: flex; gap: 16px; margin-bottom: 10px; font-size: 12px;
     color: var(--ink-dim); flex-wrap: wrap;
@@ -486,10 +451,10 @@
   }
   .sheet h2 {
     font-family: var(--font-display); font-size: 22px; font-weight: 400;
-    margin: 0 0 8px;
+    margin: 0 0 20px;
   }
   .sheet .body {
-    font-size: 14px; color: var(--ink-dim); margin-bottom: 20px; line-height: 1.7;
+    font-size: 14px; color: var(--ink-dim); margin: -12px 0 20px; line-height: 1.7;
   }
   .sheet .danger-note {
     font-size: 12px; color: var(--danger); margin-bottom: 20px; line-height: 1.5;
@@ -561,7 +526,6 @@
 
   <header>
     <div class="brand">loose pomodoro</div>
-    <div class="tag">鳴らないストップウォッチ</div>
   </header>
 
   <div id="view-now" class="view"></div>
@@ -964,18 +928,9 @@ function renderNow() {
   const el = document.getElementById('view-now');
   if (!state.session) {
     el.innerHTML = `
-      <div class="start-hero">
-        <h1>さあ、はじめよう</h1>
-        <p>タップしてセッションを開始</p>
-      </div>
       <button class="start-btn" id="startBtn">
-        <span class="k">START</span>
-        <span class="j">作業をはじめる</span>
+        <span class="j">はじめる</span>
       </button>
-      <div class="hint-box">
-        <div class="label">how it works</div>
-        開始すると、中央の大きなボタンで作業↔休憩を自由に切り替え。鳴りません。長押しでセッション終了。
-      </div>
     `;
     document.getElementById('startBtn').onclick = startSession;
     return;
@@ -991,24 +946,17 @@ function renderNow() {
   // Gentle message
   let gentle = '';
   if (mode === 'work' && lapMs >= 50 * 60 * 1000) {
-    gentle = '50分ノンストップ。そろそろ一息いれてもいいかも。';
+    gentle = '50分経過。一息いれてもいいかも。';
   } else if (mode === 'rest' && lapMs >= 15 * 60 * 1000) {
-    gentle = '休憩15分経過。そろそろ戻ってくる？';
+    gentle = '休憩15分。そろそろ戻ってくる？';
   }
 
   el.innerHTML = `
     <button class="main-btn ${mode}" id="mainBtn">
-      <div class="top">
-        <div class="k">${mode === 'work' ? 'at work' : 'on break'}</div>
-        <div class="j">${mode === 'work' ? '作業中' : '休憩中'}</div>
-      </div>
-      <div class="time-wrap">
-        <div class="time">${fmtLap(lapMs)}</div>
-        <div class="sub">この${mode === 'work' ? '作業' : '休憩'}の経過時間</div>
-      </div>
-      <div class="ghost-hint">タップで切替</div>
+      <div class="label">${mode === 'work' ? '作業中' : '休憩中'}</div>
+      <div class="time">${fmtLap(lapMs)}</div>
     </button>
-    <button class="end-btn" id="endBtn">セッションを終了</button>
+    <button class="end-btn" id="endBtn">終了</button>
     ${gentle ? `<div class="gentle"><span style="margin-right:8px;">✦</span>${escapeHtml(gentle)}</div>` : ''}
     <div class="today">
       <div class="label">today</div>
@@ -1051,8 +999,8 @@ function renderHistory() {
   if (days.length === 0) {
     el.innerHTML = `
       <div class="empty">
-        <div class="big">まだ何もない</div>
-        <div class="sub">「いま」タブから作業をはじめると<br>ここに記録が積みあがっていきます。</div>
+        <div class="big">まだ記録はありません</div>
+        <div class="sub">「いま」から作業を始めると<br>ここに記録が溜まっていきます</div>
       </div>
     `;
     return;
@@ -1260,19 +1208,18 @@ function renderSettings() {
       <div class="status-card">
         <div class="sessions-label" style="letter-spacing:0.24em; text-transform:uppercase; font-size:11px; color:var(--ink-mute); font-weight:600;">status</div>
         <div class="body">
-          保存済みセッション: <strong>${state.history.length}件</strong><br>
-          データ保存場所: このアプリ内（外部送信なし）
+          保存済みセッション <strong>${state.history.length}</strong><br>
+          データはこの端末にのみ保存
         </div>
       </div>
       <button class="danger-btn" id="clearAllBtn">すべてのデータを削除</button>
       <div class="note">
-        Stage 3 · v0.3<br>
-        PWA対応 · ホーム画面に追加で快適に使えます。
+        v0.4 · ホーム画面に追加して使えます
       </div>
     </div>
   `;
   document.getElementById('clearAllBtn').onclick = () => {
-    if (confirm('全ての履歴と進行中セッションを削除します。よろしいですか？')) {
+    if (confirm('すべての履歴と進行中セッションを削除します。よろしいですか？')) {
       state.session = null;
       state.history = [];
       saveCurrent(null);
@@ -1301,9 +1248,8 @@ function renderOverlays() {
     o.className = 'sheet-overlay';
     o.innerHTML = `
       <div class="sheet">
-        <h2>今日はここまで？</h2>
-        <div class="body">現在のセッションを終了して履歴に保存します。</div>
-        <button class="btn-primary" id="confirmEndBtn">セッション終了</button>
+        <h2>セッションを終了</h2>
+        <button class="btn-primary" id="confirmEndBtn">終了する</button>
         <button class="btn-ghost" id="cancelEndBtn">まだ続ける</button>
       </div>
     `;
@@ -1320,13 +1266,13 @@ function renderOverlays() {
     o.className = 'sheet-overlay';
     o.innerHTML = `
       <div class="sheet">
-        <h2>このセッションを削除</h2>
+        <h2>セッションを削除</h2>
         <div class="body">
           ${fmtClock(t.firstStart)}〜${fmtClock(t.lastEnd)}<br>
           作業 ${fmtSummary(t.work)} / 休憩 ${fmtSummary(t.rest)}
         </div>
-        <div class="danger-note">※ 一度削除すると元に戻せません</div>
-        <button class="btn-primary danger" id="confirmDelBtn">削除する</button>
+        <div class="danger-note">削除すると元に戻せません</div>
+        <button class="btn-primary danger" id="confirmDelBtn">削除</button>
         <button class="btn-ghost" id="cancelDelBtn">キャンセル</button>
       </div>
     `;
@@ -1363,7 +1309,7 @@ function renderOverlays() {
             </div>
           </div>
           <div class="lap-edit-error" id="lapEditError" style="display:none;"></div>
-          <button class="btn-primary" id="saveLapBtn">保存する</button>
+          <button class="btn-primary" id="saveLapBtn">保存</button>
           <button class="btn-ghost" id="cancelLapBtn">キャンセル</button>
         </div>
       `;
