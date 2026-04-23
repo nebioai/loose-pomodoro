@@ -367,6 +367,65 @@
   .session-tl .seg.work { background: var(--work); }
   .session-tl .seg.rest { background: var(--rest); }
 
+  /* Lap list */
+  .lap-list {
+    margin-top: 10px; border-top: 1px solid var(--hair);
+    padding-top: 8px; display: flex; flex-direction: column; gap: 2px;
+  }
+  .lap-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--ink-dim); padding: 4px 0;
+  }
+  .lap-row .lap-type {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    padding: 2px 7px; border-radius: 4px; flex-shrink: 0;
+  }
+  .lap-row .lap-type.work { background: #2D405718; color: var(--work); }
+  .lap-row .lap-type.rest { background: #5F735518; color: var(--rest); }
+  .lap-row .lap-time {
+    font-family: var(--font-display); font-size: 13px; color: var(--ink);
+    font-feature-settings: "tnum";
+  }
+  .lap-row .lap-dur { color: var(--ink-mute); font-size: 11px; }
+  .lap-edit-btn {
+    margin-left: auto; background: transparent;
+    border: 1px solid var(--hair); color: var(--ink-mute);
+    font-size: 11px; padding: 3px 9px; border-radius: 6px;
+    letter-spacing: 0.05em; flex-shrink: 0;
+  }
+  .lap-edit-btn:active { background: var(--surface-alt); }
+
+  /* Edit lap sheet internals */
+  .lap-edit-type {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; padding: 3px 10px; border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .lap-edit-type.work { background: #2D405718; color: var(--work); }
+  .lap-edit-type.rest { background: #5F735518; color: var(--rest); }
+  .lap-edit-fields {
+    display: flex; gap: 16px; margin-bottom: 20px;
+  }
+  .lap-edit-field {
+    flex: 1; display: flex; flex-direction: column; gap: 6px;
+  }
+  .lap-edit-field label {
+    font-size: 11px; color: var(--ink-mute); letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .lap-edit-field input[type="time"] {
+    font-family: var(--font-display); font-size: 22px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 10px; padding: 12px 14px; width: 100%;
+    outline: none; box-sizing: border-box;
+  }
+  .lap-edit-field input[type="time"]:focus { border-color: var(--ink-dim); }
+  .lap-edit-error {
+    font-size: 12px; color: var(--danger); background: #9E4A3F11;
+    border: 1px solid #9E4A3F33; border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 16px; line-height: 1.5;
+  }
+
   /* Settings */
   .settings { padding: 16px 20px; }
   .status-card {
@@ -527,6 +586,7 @@ const state = {
   undo: null,
   confirmEnd: false,
   deleteTarget: null,
+  editLapTarget: null,
   exportData: null,
   expandedDayKey: null,
 };
@@ -594,6 +654,16 @@ function fmtDateShort(ts) {
 function todayKey() { return dayKey(Date.now()); }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function applyHHMM(originalTs, hhmmStr) {
+  const d = new Date(originalTs);
+  const [hh, mm] = hhmmStr.split(':').map(Number);
+  d.setHours(hh, mm, 0, 0);
+  return d.getTime();
+}
+function showLapEditError(msg) {
+  const el = document.getElementById('lapEditError');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
 }
 
 // ---------- Aggregations ----------
@@ -738,6 +808,33 @@ function deleteSession(id) {
   state.history = state.history.filter(s => s.id !== id);
   state.deleteTarget = null;
   saveHistory(state.history);
+  render();
+}
+function openEditLap(sessionId, lapIndex) {
+  state.editLapTarget = { sessionId, lapIndex };
+  render();
+}
+function saveEditLap(sessionId, lapIndex, newStartHHMM, newEndHHMM) {
+  const origSession = state.history.find(s => s.id === sessionId);
+  if (!origSession) return;
+  const session = JSON.parse(JSON.stringify(origSession));
+  const lap = session.laps[lapIndex];
+  if (!lap || lap.endAt == null) return;
+  if (!newStartHHMM || !newEndHHMM) { showLapEditError('時刻を入力してください'); return; }
+  const newStart = applyHHMM(lap.startAt, newStartHHMM);
+  const newEnd   = applyHHMM(lap.endAt,   newEndHHMM);
+  if (newStart >= newEnd) { showLapEditError('開始は終了より前にしてください'); return; }
+  session.laps[lapIndex] = { ...lap, startAt: newStart, endAt: newEnd };
+  if (lapIndex + 1 < session.laps.length)
+    session.laps[lapIndex + 1] = { ...session.laps[lapIndex + 1], startAt: newEnd };
+  if (lapIndex > 0)
+    session.laps[lapIndex - 1] = { ...session.laps[lapIndex - 1], endAt: newStart };
+  session.startAt = session.laps[0].startAt;
+  const lastLap = session.laps[session.laps.length - 1];
+  if (lastLap.endAt != null) session.endAt = lastLap.endAt;
+  state.history = state.history.map(s => s.id === sessionId ? session : s);
+  saveHistory(state.history);
+  state.editLapTarget = null;
   render();
 }
 
@@ -1000,6 +1097,12 @@ function renderHistory() {
       render();
     };
   });
+  el.querySelectorAll('.lap-edit-btn').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      openEditLap(parseInt(b.dataset.sessionId, 10), parseInt(b.dataset.lapIndex, 10));
+    };
+  });
 }
 
 function renderWeekChart(days) {
@@ -1134,6 +1237,18 @@ function renderSessionItem(session, dK, dayStart) {
           }).join('')}
         </div>
       ` : ''}
+      ${!isLive ? `
+        <div class="lap-list">
+          ${session.laps.filter(l => l.endAt != null).map((l, i) => `
+            <div class="lap-row">
+              <span class="lap-type ${l.type}">${l.type === 'work' ? '作業' : '休憩'}</span>
+              <span class="lap-time">${fmtClock(l.startAt)} — ${fmtClock(l.endAt)}</span>
+              <span class="lap-dur">${fmtSummary(l.endAt - l.startAt)}</span>
+              <button class="lap-edit-btn" data-session-id="${session.id}" data-lap-index="${i}">編集</button>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -1219,6 +1334,48 @@ function renderOverlays() {
     o.onclick = (e) => { if (e.target === o) { state.deleteTarget = null; render(); } };
     document.getElementById('confirmDelBtn').onclick = () => deleteSession(t.sessionId);
     document.getElementById('cancelDelBtn').onclick = () => { state.deleteTarget = null; render(); };
+  }
+
+  // Edit lap sheet
+  if (state.editLapTarget) {
+    const { sessionId, lapIndex } = state.editLapTarget;
+    const targetSession = state.history.find(s => s.id === sessionId);
+    if (!targetSession) { state.editLapTarget = null; }
+    else {
+      const lap = targetSession.laps[lapIndex];
+      const typeLabel = lap.type === 'work' ? '作業' : '休憩';
+      const startVal = fmtClock(lap.startAt);
+      const endVal   = fmtClock(lap.endAt);
+      const o = document.createElement('div');
+      o.className = 'sheet-overlay';
+      o.innerHTML = `
+        <div class="sheet">
+          <h2>ラップを編集</h2>
+          <div class="lap-edit-type ${lap.type}">${typeLabel}</div>
+          <div class="lap-edit-fields">
+            <div class="lap-edit-field">
+              <label for="lapStartInput">開始</label>
+              <input id="lapStartInput" type="time" value="${startVal}">
+            </div>
+            <div class="lap-edit-field">
+              <label for="lapEndInput">終了</label>
+              <input id="lapEndInput" type="time" value="${endVal}">
+            </div>
+          </div>
+          <div class="lap-edit-error" id="lapEditError" style="display:none;"></div>
+          <button class="btn-primary" id="saveLapBtn">保存する</button>
+          <button class="btn-ghost" id="cancelLapBtn">キャンセル</button>
+        </div>
+      `;
+      document.body.appendChild(o);
+      o.onclick = (e) => { if (e.target === o) { state.editLapTarget = null; render(); } };
+      document.getElementById('saveLapBtn').onclick = () => {
+        const s = document.getElementById('lapStartInput').value;
+        const e = document.getElementById('lapEndInput').value;
+        saveEditLap(sessionId, lapIndex, s, e);
+      };
+      document.getElementById('cancelLapBtn').onclick = () => { state.editLapTarget = null; render(); };
+    }
   }
 
   // Export preview
